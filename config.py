@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 @dataclass(frozen=True)
 class Config:
     COOKIES_FILE: str = "cookies.json"
@@ -29,6 +30,7 @@ class Config:
     })
 
     APPRISE_URL: str = os.getenv("APPRISE_URL", "")
+
 
 config = Config()
 if not config.APPRISE_URL:

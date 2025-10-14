@@ -1,6 +1,7 @@
 import time
 import random
 
+
 class RateLimiter:
     def __init__(self, min_delay=2.0, max_delay=30.0):
         self.min_delay = min_delay

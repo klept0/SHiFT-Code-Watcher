@@ -13,14 +13,17 @@ from utils import load_json, save_json, notify, logger
 init(autoreset=True)
 rate_limiter = RateLimiter()
 
+
 def main():
     session = get_session()
     if not verify_login(session):
-        notify(config.APPRISE_URL, "ShiftWatcher", "Session expired — refreshing cookies.")
+        notify(config.APPRISE_URL, "ShiftWatcher",
+               "Session expired — refreshing cookies.")
         refresh_cookies()
         session = get_session()
         if not verify_login(session):
-            notify(config.APPRISE_URL, "ShiftWatcher", "Login failed after refresh.")
+            notify(config.APPRISE_URL, "ShiftWatcher",
+                   "Login failed after refresh.")
             return
 
     all_codes = load_json(config.LOG_FILE, [])
@@ -69,10 +72,14 @@ def main():
             # Periodic update every 5 codes
             if check_counter % 5 == 0 or check_counter == len(fresh):
                 pbar.set_description_str(
-                    f"Processed {check_counter}/{len(fresh)} | Success: {Fore.GREEN}{success_count}{Style.RESET_ALL} | Failed: {Fore.RED}{fail_count}{Style.RESET_ALL}"
+                    f"Processed {check_counter}/{len(fresh)} | "
+                    f"Success: {Fore.GREEN}{success_count}{Style.RESET_ALL} | "
+                    f"Failed: {Fore.RED}{fail_count}{Style.RESET_ALL}"
                 )
 
-    print(f"\n{Fore.CYAN}All codes processed — {success_count} good, {fail_count} used/invalid.{Style.RESET_ALL}")
+    print(f"\n{Fore.CYAN}All codes processed — {success_count} good, "
+          f"{fail_count} used/invalid.{Style.RESET_ALL}")
+
 
 if __name__ == "__main__":
     while True:

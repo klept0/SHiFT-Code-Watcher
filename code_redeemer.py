@@ -1,12 +1,13 @@
-from typing import Optional
 from utils import logger
 from config import config
 import requests
 
+
 def redeem_code(session: requests.Session, code: str) -> str:
     data = {"code": code}
     try:
-        r = session.post(config.REDEEM_URL, headers=config.HEADERS, data=data, timeout=config.REQUEST_TIMEOUT)
+        r = session.post(config.REDEEM_URL, headers=config.HEADERS,
+                         data=data, timeout=config.REQUEST_TIMEOUT)
         text = r.text.lower()
         if "used" in text:
             return "used"

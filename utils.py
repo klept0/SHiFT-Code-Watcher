@@ -2,19 +2,25 @@ import os
 import json
 import logging
 from apprise import Apprise
-from colorama import init, Fore, Style
+from colorama import init
 
 init(autoreset=True)
+
 
 def setup_logging():
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s | %(levelname)s | %(message)s",
-        handlers=[logging.FileHandler("shiftwatcher.log"), logging.StreamHandler()],
+        handlers=[
+            logging.FileHandler("shiftwatcher.log"),
+            logging.StreamHandler()
+        ],
     )
     return logging.getLogger(__name__)
 
+
 logger = setup_logging()
+
 
 def load_json(path: str, default=None):
     if not os.path.exists(path):
@@ -26,12 +32,14 @@ def load_json(path: str, default=None):
         logger.error(f"Failed to load {path}: {e}")
         return default if default is not None else []
 
+
 def save_json(path: str, data):
     try:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
     except Exception as e:
         logger.error(f"Failed to save {path}: {e}")
+
 
 def notify(apprise_url: str, title: str, body: str):
     ap = Apprise()
