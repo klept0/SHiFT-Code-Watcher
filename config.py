@@ -17,17 +17,21 @@ class Config:
     PLAYWRIGHT_TIMEOUT: int = 30000
     REQUEST_TIMEOUT: int = 15
 
-    SOURCES: List[str] = field(default_factory=lambda: [
-        "https://www.ign.com/wikis/borderlands-4/Borderlands_4_SHiFT_Codes",
-        "https://x.com/GearboxOfficial",
-        "https://twitter.com/DuvalMagic",
-        "https://www.facebook.com/GearboxSoftware",
-        "https://game8.co/games/Borderlands-4/archives/548406",
-    ])
+    SOURCES: List[str] = field(
+        default_factory=lambda: [
+            "https://www.ign.com/wikis/borderlands-4/Borderlands_4_SHiFT_Codes",
+            "https://x.com/GearboxOfficial",
+            "https://twitter.com/DuvalMagic",
+            "https://www.facebook.com/GearboxSoftware",
+            "https://game8.co/games/Borderlands-4/archives/548406",
+        ]
+    )
 
-    HEADERS: dict = field(default_factory=lambda: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-    })
+    HEADERS: dict = field(
+        default_factory=lambda: {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+        }
+    )
 
     APPRISE_URL: str = os.getenv("APPRISE_URL", "")
 

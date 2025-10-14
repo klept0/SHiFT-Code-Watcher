@@ -17,13 +17,13 @@ rate_limiter = RateLimiter()
 def main():
     session = get_session()
     if not verify_login(session):
-        notify(config.APPRISE_URL, "ShiftWatcher",
-               "Session expired — refreshing cookies.")
+        notify(
+            config.APPRISE_URL, "ShiftWatcher", "Session expired — refreshing cookies."
+        )
         refresh_cookies()
         session = get_session()
         if not verify_login(session):
-            notify(config.APPRISE_URL, "ShiftWatcher",
-                   "Login failed after refresh.")
+            notify(config.APPRISE_URL, "ShiftWatcher", "Login failed after refresh.")
             return
 
     all_codes = load_json(config.LOG_FILE, [])
@@ -77,8 +77,19 @@ def main():
                     f"Failed: {Fore.RED}{fail_count}{Style.RESET_ALL}"
                 )
 
-    print(f"\n{Fore.CYAN}All codes processed — {success_count} good, "
-          f"{fail_count} used/invalid.{Style.RESET_ALL}")
+    print(
+        f"\n{Fore.CYAN}All codes processed — {success_count} good, "
+        f"{fail_count} used/invalid.{Style.RESET_ALL}"
+    )
+
+    # Status message: waiting for next check
+    hours = config.SCAN_INTERVAL // 3600
+    minutes = (config.SCAN_INTERVAL % 3600) // 60
+    time_str = f"{hours}h {minutes}m" if hours > 0 else f"{minutes}m"
+    print(
+        f"{Fore.YELLOW}[{time.strftime('%H:%M:%S')}] Waiting for new codes... "
+        f"Next check in {time_str}{Style.RESET_ALL}"
+    )
 
 
 if __name__ == "__main__":
