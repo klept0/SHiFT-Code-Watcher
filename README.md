@@ -1,5 +1,7 @@
 # SHiFT-Code-Watcher
 
+## Version 1.0
+
 A Python automation tool that monitors multiple sources for new SHiFT codes for Borderlands 4, automatically attempts to redeem them, and sends notifications for updates and results.
 
 **Disclaimer:** I'm not affiliated with Gearbox Software at all - just a passionate fan who built this so I don't miss SHiFT code drops while trying to adult responsibly. Because who has time to manually check websites when you could be automating your loot addiction?
