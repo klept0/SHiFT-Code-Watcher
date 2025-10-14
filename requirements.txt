@@ -1,0 +1,6 @@
+requests
+playwright
+colorama
+tqdm
+python-dotenv
+apprise
