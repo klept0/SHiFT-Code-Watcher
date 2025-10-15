@@ -37,5 +37,7 @@ class Config:
 
 
 config = Config()
-if not config.APPRISE_URL:
+# Only require APPRISE_URL if we're actually running the main script
+# Allow imports for testing/CI without requiring environment variables
+if __name__ == "__main__" and not config.APPRISE_URL:
     raise ValueError("Missing APPRISE_URL environment variable")
