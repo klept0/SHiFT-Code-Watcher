@@ -2,8 +2,12 @@ from playwright.sync_api import sync_playwright
 import requests
 import os
 from utils import (
-    logger, save_json, load_json, save_encrypted_json,
-    load_encrypted_json, generate_encryption_key
+    logger,
+    save_json,
+    load_json,
+    save_encrypted_json,
+    load_encrypted_json,
+    generate_encryption_key,
 )
 from config import config
 from requests.adapters import HTTPAdapter
@@ -67,9 +71,7 @@ def get_session() -> requests.Session:
     session = get_session_with_retry()
     for c in cookies:
         session.cookies.set(
-            c["name"],
-            c["value"],
-            domain=c.get("domain", "shift.gearboxsoftware.com")
+            c["name"], c["value"], domain=c.get("domain", "shift.gearboxsoftware.com")
         )
     return session
 

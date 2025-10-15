@@ -82,9 +82,7 @@ def notify(apprise_url: str, title: str, body: str) -> bool:
         return False
 
 
-def generate_encryption_key(
-    password: str, salt: Optional[bytes] = None
-) -> bytes:
+def generate_encryption_key(password: str, salt: Optional[bytes] = None) -> bytes:
     """Generate encryption key from password using PBKDF2."""
     if salt is None:
         salt = os.urandom(16)
@@ -130,9 +128,7 @@ def save_encrypted_json(path: str, data: Any, encryption_key: bytes) -> None:
         logger.error(f"Failed to save encrypted data to {path}: {e}")
 
 
-def load_encrypted_json(
-    path: str, encryption_key: bytes, default: Any = None
-) -> Any:
+def load_encrypted_json(path: str, encryption_key: bytes, default: Any = None) -> Any:
     """Load and decrypt JSON data."""
     if not os.path.exists(path):
         return default if default is not None else []

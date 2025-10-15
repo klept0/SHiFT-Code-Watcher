@@ -2,8 +2,11 @@ import pytest
 import tempfile
 import os
 from utils import (
-    generate_encryption_key, encrypt_data, decrypt_data,
-    save_encrypted_json, load_encrypted_json
+    generate_encryption_key,
+    encrypt_data,
+    decrypt_data,
+    save_encrypted_json,
+    load_encrypted_json,
 )
 
 
@@ -45,7 +48,7 @@ def test_encrypted_json_storage():
     test_data = {"cookies": [{"name": "session", "value": "abc123"}]}
     password = "secure_password"
 
-    with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
         temp_file = f.name
 
     try:
