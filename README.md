@@ -113,6 +113,12 @@ Contributions are welcome! Please:
 - Submit pull requests with clear descriptions.
 - Follow the existing code style and modular structure.
 
+## Support
+
+If you find this tool helpful and want to support its development, consider buying me a coffee! ☕
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/klept0)
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

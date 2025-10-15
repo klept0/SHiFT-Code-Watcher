@@ -24,7 +24,7 @@ def get_session_with_retry() -> requests.Session:
     return session
 
 
-def refresh_cookies():
+def refresh_cookies(verbose: bool = False):
     """Refresh cookies using Playwright browser automation."""
     logger.info("Launching Playwright for manual login...")
 
@@ -52,8 +52,15 @@ def refresh_cookies():
             save_json(config.COOKIES_FILE, cookies)
             logger.info("Cookies saved (unencrypted).")
 
-        browser.close()
-    logger.info("Cookie refresh process completed.")
+        # Only close browser if not in verbose mode
+        if not verbose:
+            browser.close()
+            logger.info("Cookie refresh process completed.")
+        else:
+            logger.info(
+                "Cookie refresh process completed. "
+                "Browser left open for verbose mode."
+            )
 
 
 def get_session() -> requests.Session:
