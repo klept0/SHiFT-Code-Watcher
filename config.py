@@ -33,6 +33,10 @@ class Config:
         }
     )
 
+    # Security settings
+    ENCRYPT_COOKIES: bool = os.getenv("ENCRYPT_COOKIES", "false").lower() == "true"
+    SECRET_KEY: str = os.getenv("SHIFT_SECRET_KEY", "")
+
     APPRISE_URL: str = os.getenv("APPRISE_URL", "")
 
 

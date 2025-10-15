@@ -3,4 +3,10 @@ __pycache__/
 .env
 *.log
 cookies.json
+codes_log.json
+codes_used.json
 .DS_Store
+.venv/
+.mypy_cache/
+.pytest_cache/
+logs/

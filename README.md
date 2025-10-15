@@ -13,6 +13,12 @@ A Python automation tool that monitors multiple sources for new SHiFT codes for 
 
 This tool requires storing SHiFT login credentials and session cookies. Use at your own risk and ensure you understand the security implications. The tool is provided "as is" without any warranties.
 
+**Security Features:**
+
+- Optional cookie encryption using Fernet symmetric encryption
+- Secure key derivation using PBKDF2 with 100,000 iterations
+- Environment variable-based configuration for sensitive data
+
 ## Features
 
 - Scrapes multiple official and community sources for SHiFT codes.
@@ -24,9 +30,9 @@ This tool requires storing SHiFT login credentials and session cookies. Use at y
 
 ## Requirements
 
-- Python 3.10+
+- Python 3.10+ (tested with Python 3.13)
 - Playwright (with installed browsers)
-- Requests, Colorama, tqdm, python-dotenv, apprise Python packages
+- Requests, Colorama, tqdm, python-dotenv, apprise, cryptography Python packages
 
 ## Installation
 
@@ -72,7 +78,15 @@ Run the watcher script to start monitoring and redeeming codes:
 python shift_watcher.py
 ```
 
+For verbose output with detailed logging and browser inspection (useful for debugging):
+
+```bash
+python shift_watcher.py --verbose
+```
+
 The script runs continuously, checking for new codes every hour by default, and provides live progress updates.
+
+**Note:** The script will automatically check for required dependencies on startup and provide helpful error messages if any modules are missing.
 
 ## Configuration
 
@@ -104,6 +118,12 @@ Contributions are welcome! Please:
 - Create feature branches.
 - Submit pull requests with clear descriptions.
 - Follow the existing code style and modular structure.
+
+## Support
+
+If you find this tool helpful and want to support its development, consider buying me a coffee! ☕
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/klept0)
 
 ## License
 
