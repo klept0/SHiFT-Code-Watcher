@@ -54,8 +54,10 @@ def load_json(path: str, default: Optional[Any] = None) -> Union[List[Any], Any]
 def save_json(path: str, data: Any) -> None:
     """Save data to JSON file with error handling."""
     try:
-        # Ensure directory exists
-        os.makedirs(os.path.dirname(path), exist_ok=True)
+        # Ensure directory exists (only if path contains a directory)
+        dir_path = os.path.dirname(path)
+        if dir_path:
+            os.makedirs(dir_path, exist_ok=True)
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
     except Exception as e:
@@ -118,8 +120,10 @@ def decrypt_data(encrypted_data: str, key: bytes) -> str:
 def save_encrypted_json(path: str, data: Any, encryption_key: bytes) -> None:
     """Save data as encrypted JSON."""
     try:
-        # Ensure directory exists
-        os.makedirs(os.path.dirname(path), exist_ok=True)
+        # Ensure directory exists (only if path contains a directory)
+        dir_path = os.path.dirname(path)
+        if dir_path:
+            os.makedirs(dir_path, exist_ok=True)
         json_str = json.dumps(data, indent=2, ensure_ascii=False)
         encrypted = encrypt_data(json_str, encryption_key)
         with open(path, "w", encoding="utf-8") as f:
