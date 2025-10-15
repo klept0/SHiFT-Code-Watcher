@@ -277,11 +277,36 @@ if __name__ == "__main__":
         action="store_true",
         help="Enable verbose output with detailed logging",
     )
+    parser.add_argument(
+        "--reddit",
+        action="store_true",
+        help="Monitor Reddit RSS feed for SHiFT codes instead of configured sources",
+    )
     args = parser.parse_args()
 
-    while True:
-        try:
-            main(verbose=args.verbose)
-        except Exception as e:
-            logger.exception(f"Main loop error: {e}")
-        time.sleep(config.SCAN_INTERVAL)
+    if args.reddit:
+        # Import reddit parser only when needed
+        from reddit_parser import monitor_reddit_for_codes
+
+        # Get authenticated session for Reddit monitoring
+        session = get_session()
+        if not verify_login(session):
+            print(
+                f"{Fore.YELLOW}Session expired, refreshing cookies...{Style.RESET_ALL}"
+            )
+            refresh_cookies(verbose=args.verbose)
+            session = get_session()
+            if not verify_login(session):
+                print(f"{Fore.RED}Login failed after refresh{Style.RESET_ALL}")
+                exit(1)
+
+        # Start Reddit monitoring (runs indefinitely)
+        monitor_reddit_for_codes(session, rate_limiter, verbose=args.verbose)
+    else:
+        # Regular monitoring mode
+        while True:
+            try:
+                main(verbose=args.verbose)
+            except Exception as e:
+                logger.exception(f"Main loop error: {e}")
+            time.sleep(config.SCAN_INTERVAL)

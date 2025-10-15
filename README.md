@@ -22,6 +22,7 @@ This tool requires storing SHiFT login credentials and session cookies. Use at y
 ## Features
 
 - Scrapes multiple official and community sources for SHiFT codes.
+- Monitors Reddit RSS feed for real-time SHiFT code discovery (every 3-5 minutes).
 - Handles login and session management with Playwright for manual cookie refresh.
 - Rate-limited automation to mimic human-like code redemption timing.
 - Sends notifications using Apprise (supports Telegram, etc.).
@@ -84,7 +85,19 @@ For verbose output with detailed logging and browser inspection (useful for debu
 python shift_watcher.py --verbose
 ```
 
-The script runs continuously, checking for new codes every hour by default, and provides live progress updates.
+For Reddit RSS monitoring mode (checks Reddit every 3-5 minutes for new SHiFT codes):
+
+```bash
+python shift_watcher.py --reddit
+```
+
+Combine with verbose mode for detailed Reddit monitoring output:
+
+```bash
+python shift_watcher.py --reddit --verbose
+```
+
+The script runs continuously, checking for new codes every hour by default (or every 3-5 minutes in Reddit mode), and provides live progress updates.
 
 **Note:** The script will automatically check for required dependencies on startup and provide helpful error messages if any modules are missing.
 
