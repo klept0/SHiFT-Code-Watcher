@@ -4,3 +4,4 @@ colorama
 tqdm
 python-dotenv
 apprise
+cryptography

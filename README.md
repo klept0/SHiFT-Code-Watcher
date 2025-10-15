@@ -13,6 +13,12 @@ A Python automation tool that monitors multiple sources for new SHiFT codes for 
 
 This tool requires storing SHiFT login credentials and session cookies. Use at your own risk and ensure you understand the security implications. The tool is provided "as is" without any warranties.
 
+**Security Features:**
+
+- Optional cookie encryption using Fernet symmetric encryption
+- Secure key derivation using PBKDF2 with 100,000 iterations
+- Environment variable-based configuration for sensitive data
+
 ## Features
 
 - Scrapes multiple official and community sources for SHiFT codes.
