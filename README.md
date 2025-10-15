@@ -30,7 +30,7 @@ This tool requires storing SHiFT login credentials and session cookies. Use at y
 
 ## Requirements
 
-- Python 3.10+
+- Python 3.10+ (tested with Python 3.13)
 - Playwright (with installed browsers)
 - Requests, Colorama, tqdm, python-dotenv, apprise, cryptography Python packages
 
