@@ -1,5 +1,58 @@
 import time
 import random
+
+
+# Check dependencies before importing other modules
+def check_dependencies():
+    """Check if all required modules are installed."""
+    missing_modules: list[str] = []
+
+    try:
+        __import__("cryptography")
+    except ImportError:
+        missing_modules.append("cryptography")
+
+    try:
+        __import__("playwright")
+    except ImportError:
+        missing_modules.append("playwright")
+
+    try:
+        __import__("requests")
+    except ImportError:
+        missing_modules.append("requests")
+
+    try:
+        __import__("apprise")
+    except ImportError:
+        missing_modules.append("apprise")
+
+    try:
+        __import__("colorama")
+    except ImportError:
+        missing_modules.append("colorama")
+
+    try:
+        __import__("tqdm")
+    except ImportError:
+        missing_modules.append("tqdm")
+
+    if missing_modules:
+        print("❌ Missing required modules: {}".format(", ".join(missing_modules)))
+        print("💡 Please run: pip install -r requirements.txt")
+        print(
+            "💡 Make sure you're in the virtual environment: "
+            "source .venv/bin/activate"
+        )
+        return False
+
+    return True
+
+
+# Only import other modules if dependencies are available
+if not check_dependencies():
+    exit(1)
+
 from colorama import Fore, Style, init
 from tqdm import tqdm
 
@@ -40,7 +93,7 @@ def main():
     all_codes.extend(fresh)
     save_json(config.LOG_FILE, all_codes)
     notify(config.APPRISE_URL, "New SHiFT Codes Found", "New Code or Codes Found")
-    print(f"{Fore.CYAN}=== Checking {len(fresh)} new codes ==={Style.RESET_ALL}")
+    print(f"{Fore.CYAN}=== Checking {len(fresh)} new codes " f"==={Style.RESET_ALL}")
 
     success_count = 0
     fail_count = 0

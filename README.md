@@ -32,7 +32,7 @@ This tool requires storing SHiFT login credentials and session cookies. Use at y
 
 - Python 3.10+
 - Playwright (with installed browsers)
-- Requests, Colorama, tqdm, python-dotenv, apprise Python packages
+- Requests, Colorama, tqdm, python-dotenv, apprise, cryptography Python packages
 
 ## Installation
 
@@ -79,6 +79,8 @@ python shift_watcher.py
 ```
 
 The script runs continuously, checking for new codes every hour by default, and provides live progress updates.
+
+**Note:** The script will automatically check for required dependencies on startup and provide helpful error messages if any modules are missing.
 
 ## Configuration
 
