@@ -78,6 +78,12 @@ Run the watcher script to start monitoring and redeeming codes:
 python shift_watcher.py
 ```
 
+For verbose output with detailed logging and browser inspection (useful for debugging):
+
+```bash
+python shift_watcher.py --verbose
+```
+
 The script runs continuously, checking for new codes every hour by default, and provides live progress updates.
 
 **Note:** The script will automatically check for required dependencies on startup and provide helpful error messages if any modules are missing.
