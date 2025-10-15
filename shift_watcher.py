@@ -31,7 +31,10 @@ def main():
     new_codes = fetch_new_codes()
     fresh = [c for c in new_codes if c not in all_codes and c not in used_codes]
     if not fresh:
-        print(f"{Fore.YELLOW}[{time.strftime('%H:%M:%S')}] No new codes found.")
+        print(
+            f"{Fore.GREEN}[{time.strftime('%H:%M:%S')}] All current codes "
+            f"checked. 🎉{Style.RESET_ALL}"
+        )
         return
 
     all_codes.extend(fresh)
@@ -52,8 +55,20 @@ def main():
                 success_count += 1
                 notify(config.APPRISE_URL, "Code Redeemed", f"✅ {code}")
                 rate_limiter.reset()
-            elif result in ("used", "invalid"):
-                status = f"{Fore.RED}{result.upper()}{Style.RESET_ALL}"
+            elif result == "used":
+                status = f"{Fore.RED}ALREADY REDEEMED{Style.RESET_ALL}"
+                fail_count += 1
+                used_codes.append(code)
+                save_json(config.USED_FILE, used_codes)
+                rate_limiter.increase()
+            elif result == "expired":
+                status = f"{Fore.YELLOW}EXPIRED{Style.RESET_ALL}"
+                fail_count += 1
+                used_codes.append(code)
+                save_json(config.USED_FILE, used_codes)
+                rate_limiter.increase()
+            elif result == "invalid":
+                status = f"{Fore.RED}INVALID{Style.RESET_ALL}"
                 fail_count += 1
                 used_codes.append(code)
                 save_json(config.USED_FILE, used_codes)
@@ -78,8 +93,8 @@ def main():
                 )
 
     print(
-        f"\n{Fore.CYAN}All codes processed — {success_count} good, "
-        f"{fail_count} used/invalid.{Style.RESET_ALL}"
+        f"\n{Fore.CYAN}All codes processed — {success_count} redeemed, "
+        f"{fail_count} not available.{Style.RESET_ALL}"
     )
 
     # Status message: waiting for next check

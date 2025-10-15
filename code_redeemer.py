@@ -13,7 +13,9 @@ def redeem_code(session: requests.Session, code: str) -> str:
             timeout=config.REQUEST_TIMEOUT,
         )
         text = r.text.lower()
-        if "used" in text:
+        if "expired" in text:
+            return "expired"
+        elif "used" in text:
             return "used"
         elif "invalid" in text:
             return "invalid"

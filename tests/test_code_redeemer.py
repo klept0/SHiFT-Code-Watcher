@@ -36,6 +36,16 @@ class TestCodeRedeemer:
         result = redeem_code(mock_session, "INVALID")
         assert result == "invalid"
 
+    def test_redeem_code_expired(self):
+        """Test redemption of expired code."""
+        mock_session = Mock()
+        mock_response = Mock()
+        mock_response.text = "This code has expired."
+        mock_session.post.return_value = mock_response
+
+        result = redeem_code(mock_session, "EXPIRED123")
+        assert result == "expired"
+
     def test_redeem_code_network_error(self):
         """Test handling of network/request errors."""
         mock_session = Mock()
@@ -70,6 +80,7 @@ class TestCodeRedeemer:
         test_cases = [
             ("SUCCESS! CODE REDEEMED", "redeemed"),
             ("Code has been USED", "used"),
+            ("Code has EXPIRED", "expired"),
             ("INVALID code entered", "invalid"),
         ]
 
