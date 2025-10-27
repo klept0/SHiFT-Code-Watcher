@@ -68,23 +68,92 @@ def _select_platform_submission(
     if not parser.forms:
         return None
 
-    preferred = config.PREFERRED_PLATFORM.strip().lower()
+    logger.debug(
+        "Found %d redemption forms with commit labels: %s",
+        len(parser.forms),
+        [form.commits for form in parser.forms],
+    )
+
+    preferred_raw = config.PREFERRED_PLATFORM.strip().lower()
     chosen_form = parser.forms[0]
     chosen_commit = chosen_form.commits[0]
 
-    if preferred:
+    def _normalize(text: str) -> str:
+        return re.sub(r"[^a-z0-9]", "", text.lower())
+
+    def _candidate_tokens(form: _RedeemForm) -> List[str]:
+        tokens: List[str] = []
+        tokens.extend(form.commits)
+        tokens.extend(form.hidden.values())
+        tokens.extend(form.attrs.values())
+        return [_normalize(token) for token in tokens if token]
+
+    platform_aliases: Dict[str, List[str]] = {
+        "xbox": ["xbox", "xboxlive", "xboxone", "xboxseries"],
+        "playstation": [
+            "playstation",
+            "playstationnetwork",
+            "ps",
+            "psn",
+            "ps5",
+            "ps4",
+        ],
+        "psn": ["psn", "playstation", "playstationnetwork"],
+        "steam": ["steam"],
+        "epic": ["epic", "epicgames"],
+        "pc": ["pc", "steam", "epic", "gearbox"],
+        "switch": ["switch", "nintendo", "nintendoswitch"],
+        "nintendo": ["nintendo", "nintendoswitch", "switch"],
+        "stadia": ["stadia"],
+    }
+
+    preferred_tokens: List[str] = []
+    if preferred_raw:
+        normalized_pref = _normalize(preferred_raw)
+        preferred_tokens = platform_aliases.get(normalized_pref, [])
+        if normalized_pref not in preferred_tokens:
+            preferred_tokens.append(normalized_pref)
+
+    if preferred_tokens:
         for form in parser.forms:
-            for commit_value in form.commits:
-                if preferred in commit_value.lower():
-                    chosen_form = form
-                    chosen_commit = commit_value
-                    break
-            else:
-                continue
-            break
+            candidates = _candidate_tokens(form)
+            logger.debug(
+                "Evaluating platform form with tokens: %s",
+                candidates,
+            )
+            matches_preference = any(
+                pref in candidate
+                for candidate in candidates
+                for pref in preferred_tokens
+            )
+            if matches_preference:
+                chosen_form = form
+                chosen_commit = form.commits[0]
+                for commit_value in form.commits:
+                    if any(
+                        pref in _normalize(commit_value) for pref in preferred_tokens
+                    ):
+                        chosen_commit = commit_value
+                        break
+                logger.info(
+                    "Selected platform form via preference tokens: %s",
+                    chosen_commit,
+                )
+                break
+        else:
+            logger.warning(
+                (
+                    "Preferred platform '%s' not matched; "
+                    "using first available option '%s'"
+                ),
+                preferred_raw,
+                chosen_commit,
+            )
 
     hidden_inputs = {key: value for key, value in chosen_form.hidden.items()}
-    if not hidden_inputs.get("code"):
+    if "shift_code" not in hidden_inputs:
+        hidden_inputs["shift_code"] = code
+    if "code" not in hidden_inputs:
         hidden_inputs["code"] = code
     hidden_inputs["commit"] = chosen_commit
 
@@ -142,25 +211,72 @@ def redeem_code(session: requests.Session, code: str) -> str:
         headers.setdefault("Referer", config.REDEEM_URL)
         headers["X-CSRF-Token"] = csrf_token
         headers["X-Requested-With"] = "XMLHttpRequest"
+        headers.setdefault(
+            "Accept",
+            "application/json, text/javascript, */*; q=0.01",
+        )
+        headers.setdefault(
+            "Content-Type",
+            "application/x-www-form-urlencoded; charset=UTF-8",
+        )
+        headers.setdefault("Origin", "https://shift.gearboxsoftware.com")
 
-        initial_payload = {
+        lookup_payload = {
             "authenticity_token": csrf_token,
             "shift_code": code,
+            "utf8": "✓",
+            "commit": "Check",
         }
+
+        logger.debug("Submitting code check via POST to %s", config.ENTITLEMENT_URL)
 
         r = session.post(
             config.ENTITLEMENT_URL,
             headers=headers,
-            data=initial_payload,
+            data=lookup_payload,
             timeout=config.REQUEST_TIMEOUT,
         )
+        logger.debug(
+            "Initial platform lookup status=%s len=%s url=%s",
+            r.status_code,
+            len(r.text),
+            r.url,
+        )
+        if r.status_code == 404 and not config.ENTITLEMENT_URL.endswith(".json"):
+            alt_url = f"{config.ENTITLEMENT_URL}.json"
+            logger.info("Lookup returned 404; retrying with %s", alt_url)
+            r = session.post(
+                alt_url,
+                headers=headers,
+                data=lookup_payload,
+                timeout=config.REQUEST_TIMEOUT,
+            )
+            logger.debug(
+                "Retry lookup status=%s len=%s url=%s",
+                r.status_code,
+                len(r.text),
+                r.url,
+            )
+
+        if r.status_code >= 400:
+            logger.warning(
+                "Initial entitlement lookup failed (%s): %s",
+                r.status_code,
+                r.text[:500],
+            )
+            r.raise_for_status()
 
         html = _response_to_html(r)
         platform_submission = _select_platform_submission(html, code)
         if platform_submission:
             action_url, payload, commit_label = platform_submission
             payload.setdefault("authenticity_token", csrf_token)
-            logger.info("Multiple platforms found; selecting option: %s", commit_label)
+            payload.setdefault("utf8", "✓")
+            payload.setdefault("shift_code", code)
+            logger.info(
+                "Multiple platforms found; selecting option: %s",
+                commit_label,
+            )
             follow_headers = dict(headers)
             follow_headers["Referer"] = config.ENTITLEMENT_URL
             r = session.post(
@@ -169,6 +285,14 @@ def redeem_code(session: requests.Session, code: str) -> str:
                 data=payload,
                 timeout=config.REQUEST_TIMEOUT,
             )
+            logger.debug(
+                "Platform redemption status=%s len=%s",
+                r.status_code,
+                len(r.text),
+            )
+            if r.status_code >= 400:
+                logger.warning("Platform redemption failed: %s", r.text[:500])
+                r.raise_for_status()
 
         text = r.text.lower()
         if "expired" in text:
