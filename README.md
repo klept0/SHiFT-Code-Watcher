@@ -107,6 +107,9 @@ The script runs continuously, checking for new codes every hour by default (or e
 - Add or remove URLs in the `SOURCES` list in `config.py` to customize code sources.
 - Store login session cookies securely; the script uses Playwright to refresh cookies when needed.
 - Configure Apprise notification endpoints via the `.env` file.
+- Optionally set the `SHIFT_PLATFORM` environment variable (`xbox`,
+  `playstation`, `steam`, etc.) to auto-select a platform when redemption
+  offers multiple choices.
 
 ## Troubleshooting
 

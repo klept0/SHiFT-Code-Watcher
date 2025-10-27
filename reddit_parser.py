@@ -21,7 +21,7 @@ def parse_reddit_rss() -> List[str]:
     Returns:
         List of unique SHiFT codes found in recent Reddit posts
     """
-    reddit_rss_url = "https://www.reddit.com/r/Borderlands.rss"
+    reddit_rss_url = "https://www.reddit.com/r/Borderlands/new/.rss?limit=5"
     codes = set()
 
     try:

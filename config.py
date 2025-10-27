@@ -12,6 +12,7 @@ class Config:
     LOG_FILE: str = "codes_log.json"
     USED_FILE: str = "codes_used.json"
     REDEEM_URL: str = "https://shift.gearboxsoftware.com/rewards"
+    ENTITLEMENT_URL: str = "https://shift.gearboxsoftware.com/entitlement_offer_codes"
     LOGIN_URL: str = "https://shift.gearboxsoftware.com/home"
     SCAN_INTERVAL: int = 3600
     PLAYWRIGHT_TIMEOUT: int = 30000
@@ -19,7 +20,7 @@ class Config:
 
     SOURCES: List[str] = field(
         default_factory=lambda: [
-            "https://www.ign.com/wikis/borderlands-4/Borderlands_4_SHiFT_Codes",
+            ("https://www.ign.com/wikis/borderlands-4/" "Borderlands_4_SHiFT_Codes"),
             "https://x.com/GearboxOfficial",
             "https://twitter.com/DuvalMagic",
             "https://www.facebook.com/GearboxSoftware",
@@ -27,11 +28,12 @@ class Config:
         ]
     )
 
-    HEADERS: dict = field(
+    HEADERS: dict[str, str] = field(
         default_factory=lambda: {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
         }
     )
+    PREFERRED_PLATFORM: str = os.getenv("SHIFT_PLATFORM", "")
 
     # Security settings
     ENCRYPT_COOKIES: bool = os.getenv("ENCRYPT_COOKIES", "false").lower() == "true"
